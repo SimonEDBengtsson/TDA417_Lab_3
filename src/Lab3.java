@@ -103,19 +103,16 @@ public class Lab3 {
         // N.B. Path is Java's class for representing filenames
         // PathPair represents a pair of Paths (see PathPair.java)
         BST<PathPair, Integer> similarity = new BST<>();
-        for (Path path1: files.keys()) {
-            for (Path path2: files.keys()) {
-                if (path1.equals(path2)) continue;
-                for (Ngram ngram1: files.get(path1)) {
-                    for (Ngram ngram2: files.get(path2)) {
-                        if (ngram1.equals(ngram2)) {
-                            PathPair pair = new PathPair(path1, path2);
-
-                            if (!similarity.contains(pair))
-                                similarity.put(pair, 0);
-
-                            similarity.put(pair, similarity.get(pair)+1);
-                        }
+        for (Ngram indexedNgram:index.keys()) {
+            // get a list of all files containing each n-gram
+            List<Path> containingFiles=index.get(indexedNgram);
+            for (int i=0;i<containingFiles.size();i++) {
+                for (int j=i+1;j<containingFiles.size();j++) {
+                    // create every possible combination and increment their occurrence
+                    PathPair pair=new PathPair(containingFiles.get(i),containingFiles.get(j));
+                    Integer occurrences=similarity.get(pair);
+                    if (occurrences==null) {
+                        occurrences=0;
                     }
                     similarity.put(pair,occurrences+1);
                 }
@@ -133,7 +130,7 @@ public class Lab3 {
             if (similarity.get(pair) < 30) continue;
             // Only consider each pair of files once - (a, b) and not
             // (b,a) - and also skip pairs consisting of the same file twice
-            if (pair.path1.compareTo(pair.path2) <= 0) continue;
+            //if (pair.path1.compareTo(pair.path2) >= 0) continue;
 
             mostSimilar.add(pair);
         }
