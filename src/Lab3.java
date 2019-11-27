@@ -77,10 +77,23 @@ public class Lab3 {
         return files;
     }
 
-    // Phase 2: build index of n-grams (not implemented yet)
+    // Phase 2: build index of n-grams
     static BST<Ngram, ArrayList<Path>> buildIndex(BST<Path, Ngram[]> files) {
         BST<Ngram, ArrayList<Path>> index = new BST<>();
-        // TO DO: build index of n-grams
+        for (Path file:files.keys()) {
+            // create an array of all n-grams in a given file, for each file
+            Ngram[] containedNgrams=files.get(file);
+            for (Ngram ngram:containedNgrams) {
+                // add the file being checked to the index for the current n-gram
+                ArrayList<Path> indexedPaths=index.get(ngram);
+                if (indexedPaths==null) {
+                    // if this is the first time the ngram is found, initialize its List
+                    indexedPaths=new ArrayList<>();
+                    index.put(ngram,indexedPaths);
+                }
+                indexedPaths.add(file);
+            }
+        }
         return index;
     }
 
@@ -104,10 +117,10 @@ public class Lab3 {
                             similarity.put(pair, similarity.get(pair)+1);
                         }
                     }
+                    similarity.put(pair,occurrences+1);
                 }
             }
         }
-
         return similarity;
     }
 
