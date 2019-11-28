@@ -22,7 +22,7 @@ import java.util.ArrayList;
  *  @author Nick Smallbone
  *  @author You!
  */
-public class ScapegoatTree<Key extends Comparable<Key>, Value> {
+public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implements MinimalistTreeMap<Key,Value> {
     final double alpha = 2;        // how unbalanced the tree may become;
                                    // alpha must be greater than 1,
                                    // height is always <= alpha * lg size.

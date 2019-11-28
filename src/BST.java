@@ -37,7 +37,7 @@ import java.util.ArrayList;
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
  */
-public class BST<Key extends Comparable<Key>, Value> {
+public class BST<Key extends Comparable<? super Key>, Value> implements MinimalistTreeMap<Key,Value> {
     private Node root;             // root of BST
 
     private class Node {

@@ -25,15 +25,15 @@ public class Lab3 {
             Stopwatch stopwatch2 = new Stopwatch();
 
             // Read all input files
-            BST<Path, Ngram[]> files = readPaths(paths);
+            MinimalistMap<Path, Ngram[]> files = readPaths(paths);
             stopwatch.finished("Reading all input files");
 
             // Build index of n-grams (not implemented yet)
-            BST<Ngram, ArrayList<Path>> index = buildIndex(files);
+            MinimalistMap<Ngram, ArrayList<Path>> index = buildIndex(files);
             stopwatch.finished("Building n-gram index");
 
             // Compute similarity of all file pairs
-            BST<PathPair, Integer> similarity = findSimilarity(files, index);
+            MinimalistMap<PathPair, Integer> similarity = findSimilarity(files, index);
             stopwatch.finished("Computing similarity scores");
 
             // Find most similar file pairs, arranged in
@@ -44,9 +44,15 @@ public class Lab3 {
 
             // Print out some statistics
             System.out.println("\nBST balance statistics:");
-            System.out.printf("  files: size %d, height %d\n", files.size(), files.height());
-            System.out.printf("  index: size %d, height %d\n", index.size(), index.height());
-            System.out.printf("  similarity: size %d, height %d\n", similarity.size(), similarity.height());
+            if (files instanceof MinimalistTreeMap)
+                System.out.printf("  files: size %d, height %d\n",
+                        ((MinimalistTreeMap)files).size(), ((MinimalistTreeMap)files).height());
+            if (index instanceof MinimalistTreeMap)
+                System.out.printf("  index: size %d, height %d\n",
+                        ((MinimalistTreeMap)index).size(), ((MinimalistTreeMap)index).height());
+            if (similarity instanceof MinimalistTreeMap)
+                System.out.printf("  similarity: size %d, height %d\n",
+                        ((MinimalistTreeMap)similarity).size(), ((MinimalistTreeMap)similarity).height());
             System.out.println("");
 
             // Print out the plagiarism report!
@@ -59,8 +65,8 @@ public class Lab3 {
     }
 
     // Phase 1: Read in each file and chop it into n-grams.
-    static BST<Path, Ngram[]> readPaths(Path[] paths) throws IOException {
-        BST<Path, Ngram[]> files = new BST<>();
+    static MinimalistMap<Path, Ngram[]> readPaths(Path[] paths) throws IOException {
+        MinimalistMap<Path, Ngram[]> files = new WrappedHashMap<>();
         for (Path path: paths) {
             String contents = new String(Files.readAllBytes(path));
             Ngram[] ngrams = Ngram.ngrams(contents, 5);
@@ -78,8 +84,8 @@ public class Lab3 {
     }
 
     // Phase 2: build index of n-grams
-    static BST<Ngram, ArrayList<Path>> buildIndex(BST<Path, Ngram[]> files) {
-        BST<Ngram, ArrayList<Path>> index = new BST<>();
+    static MinimalistMap<Ngram, ArrayList<Path>> buildIndex(MinimalistMap<Path, Ngram[]> files) {
+        MinimalistMap<Ngram, ArrayList<Path>> index = new WrappedHashMap<>();
         for (Path file:files.keys()) {
             // create an array of all n-grams in a given file, for each file
             Ngram[] containedNgrams=files.get(file);
@@ -98,11 +104,10 @@ public class Lab3 {
     }
 
     // Phase 3: Count how many n-grams each pair of files has in common.
-    static BST<PathPair, Integer> findSimilarity(BST<Path, Ngram[]> files, BST<Ngram, ArrayList<Path>> index) {
-        // TO DO: use index to make this loop much more efficient
+    static MinimalistMap<PathPair, Integer> findSimilarity(MinimalistMap<Path, Ngram[]> files, MinimalistMap<Ngram, ArrayList<Path>> index) {
         // N.B. Path is Java's class for representing filenames
         // PathPair represents a pair of Paths (see PathPair.java)
-        BST<PathPair, Integer> similarity = new BST<>();
+        MinimalistMap<PathPair, Integer> similarity = new WrappedHashMap<>();
         for (Ngram indexedNgram:index.keys()) {
             // get a list of all files containing each n-gram
             List<Path> containingFiles=index.get(indexedNgram);
@@ -123,7 +128,7 @@ public class Lab3 {
 
     // Phase 4: find all pairs of files with more than 30 n-grams
     // in common, sorted in descending order of similarity.
-    static ArrayList<PathPair> findMostSimilar(BST<PathPair, Integer> similarity) {
+    static ArrayList<PathPair> findMostSimilar(MinimalistMap<PathPair, Integer> similarity) {
         // Find all pairs of files with more than 100 n-grams in common.
         ArrayList<PathPair> mostSimilar = new ArrayList<>();
         for (PathPair pair: similarity.keys()) {
