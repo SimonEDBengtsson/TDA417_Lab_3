@@ -1,5 +1,5 @@
 /**
- * Interface for the 3 map methods used in Lab3
+ * Interface for the 3 map methods that are used in computation of similarity in Lab3.
  * @param <K> Key
  * @param <V> Value
  */
