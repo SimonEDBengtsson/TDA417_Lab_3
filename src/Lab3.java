@@ -66,7 +66,7 @@ public class Lab3 {
 
     // Phase 1: Read in each file and chop it into n-grams.
     static MinimalistMap<Path, Ngram[]> readPaths(Path[] paths) throws IOException {
-        MinimalistMap<Path, Ngram[]> files = new WrappedHashMap<>();
+        MinimalistMap<Path, Ngram[]> files = new ScapegoatTree<>();
         for (Path path: paths) {
             String contents = new String(Files.readAllBytes(path));
             Ngram[] ngrams = Ngram.ngrams(contents, 5);
@@ -85,7 +85,7 @@ public class Lab3 {
 
     // Phase 2: build index of n-grams
     static MinimalistMap<Ngram, ArrayList<Path>> buildIndex(MinimalistMap<Path, Ngram[]> files) {
-        MinimalistMap<Ngram, ArrayList<Path>> index = new WrappedHashMap<>();
+        MinimalistMap<Ngram, ArrayList<Path>> index = new ScapegoatTree<>();
         for (Path file:files.keys()) {
             // create an array of all n-grams in a given file, for each file
             Ngram[] containedNgrams=files.get(file);
@@ -107,7 +107,7 @@ public class Lab3 {
     static MinimalistMap<PathPair, Integer> findSimilarity(MinimalistMap<Path, Ngram[]> files, MinimalistMap<Ngram, ArrayList<Path>> index) {
         // N.B. Path is Java's class for representing filenames
         // PathPair represents a pair of Paths (see PathPair.java)
-        MinimalistMap<PathPair, Integer> similarity = new WrappedHashMap<>();
+        MinimalistMap<PathPair, Integer> similarity = new ScapegoatTree<>();
         for (Ngram indexedNgram:index.keys()) {
             // get a list of all files containing each n-gram
             List<Path> containingFiles=index.get(indexedNgram);
