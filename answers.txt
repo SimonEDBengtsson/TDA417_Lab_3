@@ -12,12 +12,14 @@ Q: How long did the program take on the 'small' and 'medium' directories?
 Is the ratio between the times what you would expect, given the complexity?
 Explain very briefly why.
 
-A:
+A: small: 7 files in 0.22 seconds
+   medium: 110 files in 1.34 seconds
+   The ratio is quite heavily impacted by the overhead associated with reading files.
 
 Q: How long do you predict the program would take to run on the 'huge'
 directory?
 
-A:
+A: predict around 30s, got 50s
 
 Using binary search trees
 -------------------------
