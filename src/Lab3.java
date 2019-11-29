@@ -29,7 +29,7 @@ public class Lab3 {
             stopwatch.finished("Reading all input files");
 
             // Build index of n-grams (not implemented yet)
-            MinimalistMap<Ngram, ArrayList<Path>> index = buildIndex(files);
+            MinimalistMap<Ngram, List<Path>> index = buildIndex(files);
             stopwatch.finished("Building n-gram index");
 
             // Compute similarity of all file pairs
@@ -38,7 +38,7 @@ public class Lab3 {
 
             // Find most similar file pairs, arranged in
             // decreasing order of similarity
-            ArrayList<PathPair> mostSimilar = findMostSimilar(similarity);
+            List<PathPair> mostSimilar = findMostSimilar(similarity);
             stopwatch.finished("Finding the most similar files");
             stopwatch2.finished("In total the program");
 
@@ -66,7 +66,7 @@ public class Lab3 {
 
     // Phase 1: Read in each file and chop it into n-grams.
     static MinimalistMap<Path, Ngram[]> readPaths(Path[] paths) throws IOException {
-        MinimalistMap<Path, Ngram[]> files = new ScapegoatTree<>();
+        MinimalistMap<Path, Ngram[]> files = new BST<>();
         for (Path path: paths) {
             String contents = new String(Files.readAllBytes(path));
             Ngram[] ngrams = Ngram.ngrams(contents, 5);
@@ -84,17 +84,17 @@ public class Lab3 {
     }
 
     // Phase 2: build index of n-grams
-    static MinimalistMap<Ngram, ArrayList<Path>> buildIndex(MinimalistMap<Path, Ngram[]> files) {
-        MinimalistMap<Ngram, ArrayList<Path>> index = new ScapegoatTree<>();
+    static MinimalistMap<Ngram, List<Path>> buildIndex(MinimalistMap<Path, Ngram[]> files) {
+        MinimalistMap<Ngram, List<Path>> index = new BST<>();
         for (Path file:files.keys()) {
             // create an array of all n-grams in a given file, for each file
             Ngram[] containedNgrams=files.get(file);
             for (Ngram ngram:containedNgrams) {
                 // add the file being checked to the index for the current n-gram
-                ArrayList<Path> indexedPaths=index.get(ngram);
+                List<Path> indexedPaths=index.get(ngram);
                 if (indexedPaths==null) {
                     // if this is the first time the ngram is found, initialize its List
-                    indexedPaths=new ArrayList<>();
+                    indexedPaths=new LinkedList<>();
                     index.put(ngram,indexedPaths);
                 }
                 indexedPaths.add(file);
@@ -104,10 +104,10 @@ public class Lab3 {
     }
 
     // Phase 3: Count how many n-grams each pair of files has in common.
-    static MinimalistMap<PathPair, Integer> findSimilarity(MinimalistMap<Path, Ngram[]> files, MinimalistMap<Ngram, ArrayList<Path>> index) {
+    static MinimalistMap<PathPair, Integer> findSimilarity(MinimalistMap<Path, Ngram[]> files, MinimalistMap<Ngram, List<Path>> index) {
         // N.B. Path is Java's class for representing filenames
         // PathPair represents a pair of Paths (see PathPair.java)
-        MinimalistMap<PathPair, Integer> similarity = new ScapegoatTree<>();
+        MinimalistMap<PathPair, Integer> similarity = new BST<>();
         for (Ngram indexedNgram:index.keys()) {
             // get a list of all files containing each n-gram
             List<Path> containingFiles=index.get(indexedNgram);
@@ -128,15 +128,11 @@ public class Lab3 {
 
     // Phase 4: find all pairs of files with more than 30 n-grams
     // in common, sorted in descending order of similarity.
-    static ArrayList<PathPair> findMostSimilar(MinimalistMap<PathPair, Integer> similarity) {
+    static List<PathPair> findMostSimilar(MinimalistMap<PathPair, Integer> similarity) {
         // Find all pairs of files with more than 100 n-grams in common.
-        ArrayList<PathPair> mostSimilar = new ArrayList<>();
+        List<PathPair> mostSimilar = new ArrayList<>();
         for (PathPair pair: similarity.keys()) {
             if (similarity.get(pair) < 30) continue;
-            // Only consider each pair of files once - (a, b) and not
-            // (b,a) - and also skip pairs consisting of the same file twice
-            //if (pair.path1.compareTo(pair.path2) >= 0) continue;
-
             mostSimilar.add(pair);
         }
 
