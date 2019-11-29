@@ -112,25 +112,44 @@ public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implement
     public void put(Key key, Value val) {
         if (key == null) throw new IllegalArgumentException("calls put() with a null key");
         root = put(root, key, val);
+        if (!isBalanced()) {
+            root=rebuild(root);
+        }
         assert check();
     }
 
+    /**
+     *
+     * @param node The root of the subtree to insert the key-value pair into.
+     * @param key The key defining where in the tree to put the value.
+     * @param val The value to be inserted.
+     * @return A reference to either the Node object that was passed, or to a new Node object iff node==null.
+     */
     private Node put(Node node, Key key, Value val) {
         if (node == null) return new Node(key, val);
         int cmp = key.compareTo(node.key);
-
-        // TO DO: finish implementing put.
-		// If you like you can start from the code for put in BST.java.
-        // Read the lab instructions for more hints!
         if (cmp < 0) {
+            // key is less than node.key->add the node somewhere in the right subtree
             node.left=put(node.left,key,val);
-            // key is less than node.key
-        } else if (cmp > 0) {
+            // update height if necessary
+            if (node.left.height>=node.height) {
+                // if (node.left.height==node.height) node.height++; should work
+                node.height=node.left.height+1;
+            }
+            // update size as the sum of the children +1
+            node.size=node.left.size+(node.right==null ? 0 : node.right.size)+1;
+        }
+        else if (cmp > 0) {
+            // key is greater than node.key->add the node somewhere in the left subtree
             node.right=put(node.right,key,val);
-            // key is greater than node.key
-        } else {
+            if (node.right.height>=node.height) {
+                node.height=node.right.height+1;
+            }
+            node.size=node.right.size+(node.left==null ? 0 : node.left.size)+1;
+        }
+        else {
+            // key is equal to node.key->update node value
             node.val=val;
-            // key is equal to node.key
         }
         return node;
     }
@@ -146,8 +165,12 @@ public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implement
 	// Perform an inorder traversal of the subtree rooted at 'node', storing
 	// its nodes into the ArrayList 'nodes'.
     private void inorder(Node node, ArrayList<Node> nodes) {
+        if (node==null) return;
+        // all nodes on the left hand are less than node, so add them first
         inorder(node.left,nodes);
+        // then add node
         nodes.add(node);
+        // finally the right hand side is greater than node
         inorder(node.right,nodes);
     }
 
