@@ -23,7 +23,7 @@ import java.util.ArrayList;
  *  @author You!
  */
 public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implements MinimalistTreeMap<Key,Value> {
-    final double alpha = 2;        // how unbalanced the tree may become;
+    private final double alpha = 2;        // how unbalanced the tree may become;
                                    // alpha must be greater than 1,
                                    // height is always <= alpha * lg size.
 
@@ -48,8 +48,7 @@ public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implement
     /**
      * Initializes an empty symbol table.
      */
-    public ScapegoatTree() {
-    }
+    public ScapegoatTree() {}
 
     /**
      * Returns the number of key-value pairs in this symbol table.
@@ -233,7 +232,7 @@ public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implement
      * @return all keys in the symbol table
      */
     public Iterable<Key> keys() {
-        if (size() == 0) return new ArrayList<Key>();
+        if (size() == 0) return new ArrayList<>();
         return keys(min(), max());
     }
 
@@ -252,7 +251,7 @@ public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implement
         if (lo == null) throw new IllegalArgumentException("first argument to keys() is null");
         if (hi == null) throw new IllegalArgumentException("second argument to keys() is null");
 
-        ArrayList<Key> queue = new ArrayList<Key>();
+        ArrayList<Key> queue = new ArrayList<>();
         keys(root, queue, lo, hi);
         return queue;
     } 
@@ -328,7 +327,7 @@ public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implement
         if (x == null) return true;
         if (x.height > alpha * log2(x.size)) return false;
         return isBalanced(x.left) && isBalanced(x.right);
-    } 
+    }
 }
 
 /******************************************************************************
