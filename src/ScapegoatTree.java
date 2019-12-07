@@ -111,9 +111,6 @@ public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implement
     public void put(Key key, Value val) {
         if (key == null) throw new IllegalArgumentException("calls put() with a null key");
         root = put(root, key, val);
-        if (!isBalanced()) {
-            root=rebuild(root);
-        }
         assert check();
     }
 
@@ -131,19 +128,16 @@ public class ScapegoatTree<Key extends Comparable<? super Key>, Value> implement
             // key is less than node.key->add the node somewhere in the right subtree
             node.left=put(node.left,key,val);
             // update height if necessary
-            if (node.left.height>=node.height) {
-                // if (node.left.height==node.height) node.height++; should work
-                node.height=node.left.height+1;
-            }
+            if (node.left.height>log2(node.left.size)*alpha) node.left=rebuild(node.left);
+            if (node.left.height>=node.height) node.height=node.left.height+1;
             // update size as the sum of the children +1
             node.size=node.left.size+(node.right==null ? 0 : node.right.size)+1;
         }
         else if (cmp > 0) {
             // key is greater than node.key->add the node somewhere in the left subtree
             node.right=put(node.right,key,val);
-            if (node.right.height>=node.height) {
-                node.height=node.right.height+1;
-            }
+            if (node.right.height>log2(node.right.size)*alpha) node.right=rebuild(node.right);
+            if (node.right.height>=node.height) node.height=node.right.height+1;
             node.size=node.right.size+(node.left==null ? 0 : node.left.size)+1;
         }
         else {
