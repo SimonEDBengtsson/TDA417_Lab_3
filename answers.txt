@@ -6,31 +6,36 @@ Answer in terms of N, the total number of 5-grams in the input files.
 Assume that the number of 5-grams that occur in more than one file is a small
 constant - that is, there is not much plagiarised text.
 
-A: O(N lg N).
+A: Depends on how many files there are.
+   For a directory with N 5-grams contained in 1 file, it will be constant time.
+   Spread evenly over M files: M²(lg M+N/M(lg M+N/M lg S))=M² lg M + NM(lg M + N/M lg S)=M² lg M+NM lg M + N² lg S
+   Assuming M is a fraction of N and S is negligible: N² lg N + N² lg N + N² = N² lg N
 
 Q: How long did the program take on the 'small' and 'medium' directories?
 Is the ratio between the times what you would expect, given the complexity?
 Explain very briefly why.
 
-A: small: 7 files in 0.22 seconds
-   medium: 110 files in 1.34 seconds
-   The ratio is quite heavily impacted by the overhead associated with reading files.
+A: small: 4, 19748 n-grams
+   medium: 580, 208024 n-grams
+   expected: 4*(208024/19748)²*log(208024)/log(19748)=550
+   The expected value matches up quite well with the actual value.
+
 
 Q: How long do you predict the program would take to run on the 'huge'
 directory?
 
-A: predict around 30s, got 50s
+A: 580*(3852238/208024)^2*log(3852238)/log(208024)=3 days
 
 Using binary search trees
 -------------------------
 
 Q: Which of the trees usually become unbalanced?
 
-A: BST.
+A: The index
 
 Q (optional): Is there a simple way to stop these trees becoming unbalanced?
 
-A (optional): Never instantiate it, use a HashMap instead.
+A (optional): Use a HashMap or Trie instead.
 
 Using scapegoat trees
 ---------------------
@@ -39,7 +44,7 @@ Q: Now what is the total complexity of buildIndex and findSimilarity?
 Again, assume a total of N 5-grams, and a constant number of 5-grams that
 occur in more than one file.
 
-A: O(N lg N)
+A: N lg N
 
 Q (optional): What if the total similarity score is an arbitrary number S,
 rather than a small constant?
